@@ -24,6 +24,12 @@ for event, e in enumerate(Top_events):
     HAZ = Relationship.type("Hazard")
     graph.merge(HAZ(HAZ_node, TE_node), "Top_event", "name")
     for i in Threats:
-        print(i, Threats[i])
+        for j, Bar in enumerate(Threats[i]):
+            #TODO connect barriers here
+        # print(i, Threats[i])
+        # print(len(Threats[i]))
+        temp_node = Node("Threat", name = i)
+        THREAT = Relationship.type("THREAT")
+        #TODO connect last barrier to top event here
         #TODO iterate over these threats and produce barriers
         #TODO iterate over consq as well and do the same
