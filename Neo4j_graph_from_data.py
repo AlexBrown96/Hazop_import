@@ -26,4 +26,4 @@ for event, e in enumerate(Top_events):
     for i in Threats:
         print(i, Threats[i])
         #TODO iterate over these threats and produce barriers
-        #TODO iterate over consq as well and do the same 
+        #TODO iterate over consq as well and do the same
