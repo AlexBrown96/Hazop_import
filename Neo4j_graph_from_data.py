@@ -15,7 +15,7 @@ with open('Hazards.p', 'rb') as fp:
     Hazards = pickle.load(fp)
 
 # for threat in Threats:
-#     print(threat, Threats[threat])
+#     print(Threats[threat][-1])
 # breakpoint()
 graph = Graph(password="mAES12081604")
 for event, e in enumerate(Top_events):
@@ -29,12 +29,20 @@ for event, e in enumerate(Top_events):
         temp_node = Node("Threat", name=threat)
         for bar, j in enumerate(Threats[threat]):
             # TODO connect barriers here
-            if bar < len(Threats[threat]) - 1:
-                print(bar)
-                if j != "":
+            if j != "":
+                if bar == 0:
                     THREAT = Relationship.type("BARRIER")
                     temp_threat_node = Node("Barrier", name=j)
                     graph.merge(THREAT(temp_node, temp_threat_node), "Barrier", "name")
+                elif bar < len(Threats[threat]):
+                    # print(Threats[threat][bar])
+                    BARRIER = Relationship.type("BARRIER")
+                    temp_threat_node = Node("Barrier", name=Threats[threat][bar-1])
+                    graph.merge(BARRIER(temp_threat_node, Node("Barrier", name=j)), "Barrier", "name")
+                if bar == len(Threats[threat])-1:
+                    THREAT = Relationship.type("THREAT")
+                    graph.merge(THREAT(TE_node, Node("Barrier", name = Threats[threat][-1])), "Barrier", "name")
+
                 # graph.merge(THREAT)
                 # Threats[threat][bar]
                 # THREAT = Relationship.type("THREAT")
