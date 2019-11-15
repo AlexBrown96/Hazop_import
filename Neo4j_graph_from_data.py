@@ -1,5 +1,6 @@
 from py2neo import Graph, Node, Relationship
 import pickle
+
 # MATCH (n) DETACH DELETE n
 # Threats created from Spreadsheet, order is Threat then the barriers
 
@@ -13,8 +14,9 @@ with open('Top_events.p', 'rb') as fp:
 with open('Hazards.p', 'rb') as fp:
     Hazards = pickle.load(fp)
 
-print(Top_events)
-
+# for threat in Threats:
+#     print(threat, Threats[threat])
+# breakpoint()
 graph = Graph(password="mAES12081604")
 for event, e in enumerate(Top_events):
     TE_node = Node("Top Event", name=Top_events[event])
@@ -23,13 +25,20 @@ for event, e in enumerate(Top_events):
     # link hazard to top event
     HAZ = Relationship.type("Hazard")
     graph.merge(HAZ(HAZ_node, TE_node), "Top_event", "name")
-    for i in Threats:
-        for j, Bar in enumerate(Threats[i]):
-            #TODO connect barriers here
-        # print(i, Threats[i])
-        # print(len(Threats[i]))
-        temp_node = Node("Threat", name = i)
-        THREAT = Relationship.type("THREAT")
-        #TODO connect last barrier to top event here
-        #TODO iterate over these threats and produce barriers
-        #TODO iterate over consq as well and do the same
+    for threat in Threats:
+        temp_node = Node("Threat", name=threat)
+        for bar, j in enumerate(Threats[threat]):
+            # TODO connect barriers here
+            if bar < len(Threats[threat]) - 1:
+                print(bar)
+                if j != "":
+                    THREAT = Relationship.type("BARRIER")
+                    temp_threat_node = Node("Barrier", name=j)
+                    graph.merge(THREAT(temp_node, temp_threat_node), "Barrier", "name")
+                # graph.merge(THREAT)
+                # Threats[threat][bar]
+                # THREAT = Relationship.type("THREAT")
+
+        # TODO connect last barrier to top event here
+        # TODO iterate over these threats and produce barriers
+        # TODO iterate over consq as well and do the same
