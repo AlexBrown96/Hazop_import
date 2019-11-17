@@ -13,7 +13,7 @@ scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretdata.json', scope)
 gc = gspread.authorize(creds)
-wks = gc.open("HAZOP_DATA").worksheet('HAZID')
+wks = gc.open("HAZOP_DATA").worksheet('Sheet3')
 
 # Find guide words and deviation words from columns in HAZOP spreadsheet
 guide = wks.col_values(1)
@@ -23,45 +23,25 @@ Hazards = []
 Barriers = []
 Undesired_events = []
 Consq = []
-Threats = []
-for row, e in enumerate(guide):
-    if guide[row] == "Hazard":
-        Hazards.append(wks.cell(row+1, 2).value)
-    elif guide[row] == "Undesired_event":
-        Undesired_events.append(wks.cell(row+1, 2).value)
-    elif guide[row] == "Threats":
-        temp_Threats = (wks.row_values(row+1))
-        num_Threats = len(temp_Threats)
-    elif guide[row] == "Barriers":
-        for i in range(num_Threats):
-            # print(wks.cell(row+1, i+1))
-            if temp_Threats[i] != "Threats":
-                # print(temp_Threats[i])
-                # print(wks.cell(row+1, i+1).value)
-                Threats.append([temp_Threats[i], wks.cell(row+1, i+1).value])
-    elif guide[row] == "Consequences":
-        temp_Conq = (wks.row_values(row+1))
-        num_Conq = len(temp_Conq)
-    elif guide[row] == "Mitigations":
-        for i in range(num_Conq):
-            if temp_Conq[i] != "Consequences":
-                # print(temp_Conq[i])
-                Consq.append([temp_Conq[i], wks.cell(row+1, i+1).value])
+temp_Threats = []
+temp_Consq = []
+data = []
+num_Hazards = 0
+for row, i in enumerate(guide, 1):
+    if i == "Hazard":
+        temp_Hazards = (wks.cell(row, 2).value, wks.cell(row+1, 2).value)
+        num_Hazards += 1
+    if i == "Consequences":
+        temp_Consq.append(wks.row_values(row)[1:])
+        # temp_Consq.remove("Mitigations")
+    if i == "Threats":
+        temp_Threats.append(wks.row_values(row)[1:])
+        # temp_Threats.remove("Barriers")
+        if wks.cell(row+1, 1).value != 'Threats':
+            # print([num_Hazards, temp_Hazards,temp_Consq,temp_Threats])
+            data.append([num_Hazards, temp_Hazards,temp_Consq,temp_Threats])
+            temp_Consq = []
+            temp_Threats = []
 
-Threats_Out = defaultdict(list)
-for key, val in Threats:
-    Threats_Out[key].append(val)
-Threats = dict(Threats_Out)
-
-Consq_Out = defaultdict(list)
-for key, val in Consq:
-    Consq_Out[key].append(val)
-Consq = dict(Consq_Out)
-with open('Threats.p', 'wb') as fp:
-    pickle.dump(Threats, fp, protocol=pickle.HIGHEST_PROTOCOL)
-with open('Consequences.p', 'wb') as fp:
-    pickle.dump(Consq, fp, protocol=pickle.HIGHEST_PROTOCOL)
-with open('Undesired_events.p', 'wb') as fp:
-    pickle.dump(Undesired_events, fp, protocol=pickle.HIGHEST_PROTOCOL)
-with open('Hazards.p', 'wb') as fp:
-    pickle.dump(Hazards, fp, protocol=pickle.HIGHEST_PROTOCOL)
+with open('Data.p', 'wb') as fp:
+    pickle.dump(Data, fp, protocol=pickle.HIGHEST_PROTOCOL)
