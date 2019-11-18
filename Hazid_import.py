@@ -18,18 +18,13 @@ wks = gc.open("HAZOP_DATA").worksheet('Sheet3')
 # Find guide words and deviation words from columns in HAZOP spreadsheet
 guide = wks.col_values(1)
 
-
-Hazards = []
-Barriers = []
-Undesired_events = []
-Consq = []
 temp_Threats = []
 temp_Consq = []
 data = []
 num_Hazards = 0
 for row, i in enumerate(guide, 1):
     if i == "Hazard":
-        temp_Hazards = (wks.cell(row, 2).value, wks.cell(row+1, 2).value)
+        temp_Hazards = [wks.cell(row, 2).value, wks.cell(row+1, 2).value]
         num_Hazards += 1
     if i == "Consequences":
         temp_Consq.append(wks.row_values(row)[1:])
@@ -44,4 +39,4 @@ for row, i in enumerate(guide, 1):
             temp_Threats = []
 
 with open('Data.p', 'wb') as fp:
-    pickle.dump(Data, fp, protocol=pickle.HIGHEST_PROTOCOL)
+    pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)

@@ -1,48 +1,60 @@
 from py2neo import Graph, Node, Relationship
 import pickle
-import pprint
-
 # MATCH (n) DETACH DELETE n
 # Threats created from Spreadsheet, order is Threat then the barriers
 
-Undesired_event = Node("Undesired_event", name="Loss of containment of liquid")
-with open('Threats.p', 'rb') as fp:
-    Threats = pickle.load(fp)
-with open('Consequences.p', 'rb') as fp:
-    Consequences = pickle.load(fp)
-with open('Undesired_events.p', 'rb') as fp:
-    Undesired_events = pickle.load(fp)
-with open('Hazards.p', 'rb') as fp:
-    Hazards = pickle.load(fp)
+with open('Data.p', 'rb') as fp:
+    Data = pickle.load(fp)
 
-graph = Graph(password="mAES12081604")
+graph = Graph("bolt://localhost:11002", password="12345")
 
-
-def flatten(x):
-    result = []
-    for el in x:
-        if hasattr(el, "__iter__") and not isinstance(el, str):
-            result.extend(flatten(el))
-        else:
-            result.append(el)
-    return result
-
-
-# for key in Threats.items():
-#     Threats_flat.append(flatten(key))
-
-
-for event, e in enumerate(Undesired_events):
-    TE_node = Node("Top Event", name=Undesired_events[event])
-    # Create hazard
-    HAZ_node = Node("Hazard", name=Hazards[event])
-    # link hazard to top event
+for event, row in enumerate(Data):
+    HAZ_node = Node("Hazard", name=(row[1][0]+" id: "+str(event)))
+    TE_node = Node("Top_event", name=row[1][1]+" id: "+str(event))
     HAZ = Relationship.type("Hazard")
-    graph.merge(HAZ(HAZ_node, TE_node), "Undesired_event", "name")
-    for item, i in enumerate(Threats_flat):
-        print(Threats_flat[item])
+    graph.merge(HAZ(HAZ_node, TE_node), "Top_event", "name")
+    for i, consq_row in enumerate(row[2]):
+        if "Mitigations" in consq_row:
+            consq_row.remove("Mitigations")
+        num_Consq = len(row[2][i])
+        print(consq_row, num_Consq)
+        if num_Consq == 1:
+            #If there is no Mitigations attach to top event
+            CONSEQUENCE = Relationship.type("Consequence")
+            graph.merge(CONSEQUENCE(Node("Consequence", name=consq_row[0]+" id: "+str(event)), TE_node),
+                        "Consequence", "name")
+        elif num_Consq > 1:
+            for count in range(num_Consq):
+                MIT_node = Node("Mitigation", name=consq_row[count])
+                if (count < num_Consq)-1:
+                    MITIGATION = Relationship.type("Mitigation")
+                    graph.merge(MITIGATION(MIT_node, Node("Mitigation", name=consq_row[count - 1]+" id: "+str(event))),
+                                "Mitigation", "name")
+                elif count == num_Consq - 1:
+                    CONSEQUENCE = Relationship.type("Consequence")
+                    graph.merge(CONSEQUENCE(Node("Consequence", name=(consq_row[-1]+" id: "+str(event))), TE_node),
+                                "Consequence", "name")
+
+    for j, threat_row in enumerate(row[3]):
+        if "Barriers" in threat_row:
+            threat_row.remove("Barriers")
+        num_threat = len(row[3][j])
+        if num_threat == 1:
+            #If there is no Barriers attach to top event
+            THREAT = Relationship.type("Threat")
+            graph.merge(THREAT(Node("Threat", name=threat_row[0]+" id: "+str(event)), TE_node),
+                        "Threat", "name")
+        elif num_threat > 1:
+            for count in range(num_threat):
+                if count < num_threat - 1:
+                    BAR_node = Node("Barrier", name=threat_row[count])
+                    BARRIER = Relationship.type("Barrier")
+                    graph.merge(BARRIER(BAR_node, Node("Threat", name=threat_row[count - 1]+" id: "+str(event))),
+                                "Barrier", "name")
+                elif count == num_threat - 1:
+                    THREAT = Relationship.type("Threat")
+                    graph.merge(THREAT(Node("Threat", name=(threat_row[-1]+" id: "+str(event))), TE_node),
+                                "Threat", "name")
 
 
-        # TODO connect last barrier to top event here
-        # TODO iterate over these threats and produce barriers
-        # TODO iterate over consq as well and do the same
+
