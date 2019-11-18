@@ -12,49 +12,43 @@ for event, row in enumerate(Data):
     HAZ_node = Node("Hazard", name=(row[1][0]+" id: "+str(event)))
     TE_node = Node("Top_event", name=row[1][1]+" id: "+str(event))
     HAZ = Relationship.type("Hazard")
+    CONSQ = Relationship.type("Consequence")
+    THREAT = Relationship.type("Threat")
     graph.merge(HAZ(HAZ_node, TE_node), "Top_event", "name")
     for i, consq_row in enumerate(row[2]):
         if "Mitigations" in consq_row:
             consq_row.remove("Mitigations")
         num_Consq = len(row[2][i])
-        print(consq_row, num_Consq)
-        if num_Consq == 1:
-            #If there is no Mitigations attach to top event
-            CONSEQUENCE = Relationship.type("Consequence")
-            graph.merge(CONSEQUENCE(Node("Consequence", name=consq_row[0]+" id: "+str(event)), TE_node),
-                        "Consequence", "name")
-        elif num_Consq > 1:
-            for count in range(num_Consq):
-                MIT_node = Node("Mitigation", name=consq_row[count])
-                if (count < num_Consq)-1:
-                    MITIGATION = Relationship.type("Mitigation")
-                    graph.merge(MITIGATION(MIT_node, Node("Mitigation", name=consq_row[count - 1]+" id: "+str(event))),
-                                "Mitigation", "name")
-                elif count == num_Consq - 1:
-                    CONSEQUENCE = Relationship.type("Consequence")
-                    graph.merge(CONSEQUENCE(Node("Consequence", name=(consq_row[-1]+" id: "+str(event))), TE_node),
-                                "Consequence", "name")
+        Consq_node = Node("Consequence", name=(consq_row[0]+" id: "+str(event)))
+        if len(consq_row) == 1:
+            graph.merge(CONSQ(Consq_node, TE_node), "Consequence", "name")
+        elif len(consq_row) > 1:
+            for num, val in enumerate(consq_row):
+                if 1 <= num < (len(consq_row)):
+                    MIT = Relationship.type("Mitigation")
+                    MIT_node = Node("Mitigation", name=(val+" id: "+str(event)))
+                    # print(num)
+                    MIT_node2 = Node("Mitigation", name=(consq_row[num-1]+" id: "+str(event)))
+                    graph.merge(MIT(MIT_node2, MIT_node), "Mitigation", "name")
+                if num == len(consq_row)-1:
+                    # print(consq_row[num])
+                    MIT_node3 = Node("Mitigation", name=(consq_row[num]+" id: "+str(event)))
+                    graph.merge(CONSQ(MIT_node3, TE_node), "Mitigation", "name")
 
     for j, threat_row in enumerate(row[3]):
         if "Barriers" in threat_row:
             threat_row.remove("Barriers")
         num_threat = len(row[3][j])
-        if num_threat == 1:
-            #If there is no Barriers attach to top event
-            THREAT = Relationship.type("Threat")
-            graph.merge(THREAT(Node("Threat", name=threat_row[0]+" id: "+str(event)), TE_node),
-                        "Threat", "name")
-        elif num_threat > 1:
-            for count in range(num_threat):
-                if count < num_threat - 1:
-                    BAR_node = Node("Barrier", name=threat_row[count])
-                    BARRIER = Relationship.type("Barrier")
-                    graph.merge(BARRIER(BAR_node, Node("Threat", name=threat_row[count - 1]+" id: "+str(event))),
-                                "Barrier", "name")
-                elif count == num_threat - 1:
-                    THREAT = Relationship.type("Threat")
-                    graph.merge(THREAT(Node("Threat", name=(threat_row[-1]+" id: "+str(event))), TE_node),
-                                "Threat", "name")
-
-
-
+        Threat_node = Node("Threat", name=(threat_row[0]+" id: "+str(event)))
+        if len(threat_row) == 1:
+            graph.merge(THREAT(Threat_node, TE_node), "Threat", "name")
+        elif len(threat_row) > 1:
+            for num, val in enumerate(threat_row):
+                if 1 <= num < (len(threat_row)):
+                    BAR = Relationship.type("Barrier")
+                    BAR_node = Node("Barrier", name=(val+" id: "+str(event)))
+                    BAR_node2 = Node("Barrier", name=(threat_row[num-1]+" id: "+str(event)))
+                    graph.merge(BAR(BAR_node2, BAR_node), "Barrier", "name")
+                if num == len(threat_row)-1:
+                    BAR_node3 = Node("Barrier", name=(threat_row[num]+" id: "+str(event)))
+                    graph.merge(THREAT(BAR_node3, TE_node), "Barrier", "name")
