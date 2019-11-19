@@ -6,15 +6,15 @@ import pickle
 with open('Data.p', 'rb') as fp:
     Data = pickle.load(fp)
 
-graph = Graph("bolt://localhost:11002", password="12345")
+graph = Graph("bolt://localhost:11012", password="12345")
 
 for event, row in enumerate(Data):
-    HAZ_node = Node("Hazard", name=(row[1][0]+" id: "+str(event)))
-    TE_node = Node("Top_event", name=row[1][1]+" id: "+str(event))
+    HAZ_node = Node("Hazard", name=("Hazard: "+row[1][0]+" id: "+str(event)))
+    TE_node = Node("Undesired_event", name=("Undesired_event: "+row[1][1]+" id: "+str(event)))
     HAZ = Relationship.type("Hazard")
     CONSQ = Relationship.type("Consequence")
     THREAT = Relationship.type("Threat")
-    graph.merge(HAZ(HAZ_node, TE_node), "Top_event", "name")
+    graph.merge(HAZ(HAZ_node, TE_node), "Undesired_event", "name")
     for i, consq_row in enumerate(row[2]):
         if "Mitigations" in consq_row:
             consq_row.remove("Mitigations")
