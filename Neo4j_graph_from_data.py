@@ -1,16 +1,20 @@
 from py2neo import Graph, Node, Relationship
 import pickle
+import time
 # MATCH (n) DETACH DELETE n
 # Threats created from Spreadsheet, order is Threat then the barriers
 
 with open('Data.p', 'rb') as fp:
     Data = pickle.load(fp)
-
 graph = Graph("bolt://localhost:11012", password="12345")
 
+### TODO This line of code erases the current graph if it exists. Comment it out if this is not required
+graph.run("MATCH (n) DETACH DELETE n")
+###
+
 for event, row in enumerate(Data):
-    HAZ_node = Node("Hazard", name=("Hazard: "+row[1][0]+" id: "+str(event)))
-    TE_node = Node("Undesired_event", name=("Undesired_event: "+row[1][1]+" id: "+str(event)))
+    HAZ_node = Node("Hazard", name=("Hazard: "+row[1][0]))
+    TE_node = Node("Undesired_event", name=("Undesired_event: "+row[1][1]))
     HAZ = Relationship.type("Hazard")
     CONSQ = Relationship.type("Consequence")
     THREAT = Relationship.type("Threat")
@@ -52,3 +56,6 @@ for event, row in enumerate(Data):
                 if num == len(threat_row)-1:
                     BAR_node3 = Node("Barrier", name=(threat_row[num]+" id: "+str(event)))
                     graph.merge(THREAT(BAR_node3, TE_node), "Barrier", "name")
+
+# time.sleep(10)
+# graph.run("MATCH (n) RETURN n LIMIT 40")
