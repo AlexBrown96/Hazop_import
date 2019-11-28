@@ -20,7 +20,7 @@ temp_Mits = wks.col_values(5)
 temp_Bars = wks.col_values(7)
 Consq = []
 Bar = []
-
+# TODO process this file in the same way Hazard_import does
 
 for i, Mitigation in enumerate(temp_Mits):
     temp_Consq = Consequences[i]
@@ -40,6 +40,19 @@ for j, Barrier in enumerate(temp_Bars):
     Bar.append([temp_Threats, temp])
 
 
+guide = wks.col_values(2)
+guide_length = len(guide)
+wks.update_cell(guide_length+1, 2, "'")
 
-print(Bar)
+for i in range(guide_length-1):
+    if guide[i] != guide[i+1]:
+        print([wks.cell(i+1, 1).value + ": " + guide[i]])
+
+# TODO How many hazards do we have?
+breakpoint()
+
+for row in range(len(guide)):
+    hazid_wks.update(row+1,1, "Hazard")
+
+
 # hazid_wks.update_cell(j+1, i+1, wks.cell(j+1, i+1).value)
