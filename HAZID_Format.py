@@ -18,9 +18,16 @@ Consequences = wks.col_values(4)
 Threats = wks.col_values(6)
 temp_Mits = wks.col_values(5)
 temp_Bars = wks.col_values(7)
+temp_guide = []
 Consq = []
 Bar = []
 # TODO process this file in the same way Hazard_import does
+
+guide = wks.col_values(2)
+guide_length = len(guide)
+wks.update_cell(guide_length+1, 2, "'")
+
+
 
 for i, Mitigation in enumerate(temp_Mits):
     temp_Consq = Consequences[i]
@@ -34,25 +41,15 @@ for i, Mitigation in enumerate(temp_Mits):
 for j, Barrier in enumerate(temp_Bars):
     temp_Threats = Threats[j]
     if "." in Barrier:
-        temp = list(filter(None, Barrier.split(".")))
+        temp1 = list(filter(None, Barrier.split(".")))
     else:
-        temp = Barrier
-    Bar.append([temp_Threats, temp])
+        temp1 = Barrier
+    Bar.append([temp_Threats, temp1])
 
+for i in range(1, guide_length):
+    temp_guide.append([[wks.cell(i+1, 1).value + ": " + guide[i], wks.cell(i+1, 3).value], Bar[i], Consq[i]])
 
-guide = wks.col_values(2)
-guide_length = len(guide)
-wks.update_cell(guide_length+1, 2, "'")
-
-for i in range(guide_length-1):
-    if guide[i] != guide[i+1]:
-        print([wks.cell(i+1, 1).value + ": " + guide[i]])
-
-# TODO How many hazards do we have?
-breakpoint()
-
-for row in range(len(guide)):
-    hazid_wks.update(row+1,1, "Hazard")
+print(temp_guide)
 
 
 # hazid_wks.update_cell(j+1, i+1, wks.cell(j+1, i+1).value)
