@@ -1,6 +1,7 @@
 import gspread
 import pickle
 from oauth2client.service_account import ServiceAccountCredentials
+import itertools
 
 # https://docs.google.com/spreadsheets/d/1B9ZVkqULJcgF_PpkMap1fGj-hAowC1EIhO4wVeY7LBg/edit?usp=sharing
 # Generic Google drive API access
@@ -27,8 +28,6 @@ guide = wks.col_values(2)
 guide_length = len(guide)
 wks.update_cell(guide_length+1, 2, "'")
 
-
-
 for i, Mitigation in enumerate(temp_Mits):
     temp_Consq = Consequences[i]
     # print(Mitigation)
@@ -46,10 +45,13 @@ for j, Barrier in enumerate(temp_Bars):
         temp1 = Barrier
     Bar.append([temp_Threats, temp1])
 
+# print(Consq[4][1])
 for i in range(1, guide_length):
+    # print(Bar[i])
+    print(Consq[i][0]+Consq[i][1])
     temp_guide.append([[wks.cell(i+1, 1).value + ": " + guide[i], wks.cell(i+1, 3).value], Bar[i], Consq[i]])
 
-print(temp_guide)
+# print(temp_guide)
 
 
 # hazid_wks.update_cell(j+1, i+1, wks.cell(j+1, i+1).value)
