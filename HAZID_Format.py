@@ -28,9 +28,18 @@ guide = wks.col_values(2)
 guide_length = len(guide)
 wks.update_cell(guide_length+1, 2, "'")
 
+for i, e in enumerate(Hazards, -1):
+    print(i)
+    temp = Hazards[i] + Undesired_events[i]
+    temp2 = Hazards[i+1] + Undesired_events[i+1]
+    if temp != temp2:
+        print(i, e)
+
+breakpoint()
+
 for i, Mitigation in enumerate(temp_Mits):
     temp_Consq = Consequences[i]
-    # print(Mitigation)
+
     if "." in Mitigation:
         temp = list(filter(None, Mitigation.split(".")))
     else:
@@ -45,13 +54,10 @@ for j, Barrier in enumerate(temp_Bars):
         temp1 = Barrier
     Bar.append([temp_Threats, temp1])
 
-# print(Consq[4][1])
-for i in range(1, guide_length):
-    # print(Bar[i])
-    print(Consq[i][0]+Consq[i][1])
-    temp_guide.append([[wks.cell(i+1, 1).value + ": " + guide[i], wks.cell(i+1, 3).value], Bar[i], Consq[i]])
 
-# print(temp_guide)
-
-
-# hazid_wks.update_cell(j+1, i+1, wks.cell(j+1, i+1).value)
+print(Consq)
+# for i in range(1, guide_length):
+#
+#     print(Consq[i][0]+Consq[i][1])
+#     temp_guide.append([[wks.cell(i+1, 1).value + ": " + guide[i], wks.cell(i+1, 3).value], Bar[i], Consq[i]])
+#
