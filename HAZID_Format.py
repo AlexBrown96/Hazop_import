@@ -25,7 +25,7 @@ Threat = []
 
 guide = wks.col_values(2)
 guide_length = len(guide)
-wks.update_cell(guide_length+1, 2, "'")
+wks.update_cell(guide_length + 1, 2, "'")
 
 Haz_UE = []
 flat_list = []
@@ -61,6 +61,14 @@ data = []
 for item in range(len(Hazards)):
     if item > 0:
         data.append([item, Haz_UE[item], [Consq[item]], [Threat[item]]])
-print(data)
+
+for mylist in data:
+    for sublist in mylist:
+        if type(sublist) == type(list()):
+            for key, val in enumerate(sublist[0]):
+                if sublist[0][key] == '':
+                    sublist[0].remove('')
+print(data[15:19])
+
 with open('Data.p', 'wb') as fp:
     pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
