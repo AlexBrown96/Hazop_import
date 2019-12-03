@@ -45,7 +45,6 @@ for row, i in enumerate(guide, 1):
             temp_Consq = []
             temp_Threats = []
 
-print(data
-      )
+print(data)
 with open('Data.p', 'wb') as fp:
     pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)

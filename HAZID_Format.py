@@ -10,7 +10,6 @@ scope = ['https://spreadsheets.google.com/feeds',
 creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretdata.json', scope)
 gc = gspread.authorize(creds)
 wks = gc.open("HAZOP_DATA").worksheet('HAZID_CEXC')
-hazid_wks = gc.open("HAZOP_DATA").worksheet('HAZID')
 
 Procedures = wks.col_values(1)
 Hazards = wks.col_values(2)
@@ -21,43 +20,47 @@ temp_Mits = wks.col_values(5)
 temp_Bars = wks.col_values(7)
 temp_guide = []
 Consq = []
-Bar = []
+Threat = []
 # TODO process this file in the same way Hazard_import does
 
 guide = wks.col_values(2)
 guide_length = len(guide)
 wks.update_cell(guide_length+1, 2, "'")
 
-for i, e in enumerate(Hazards, -1):
-    print(i)
-    temp = Hazards[i] + Undesired_events[i]
-    temp2 = Hazards[i+1] + Undesired_events[i+1]
-    if temp != temp2:
-        print(i, e)
-
-breakpoint()
+Haz_UE = []
+flat_list = []
+for i, e in enumerate(Hazards):
+    Haz_UE.append([Hazards[i], Undesired_events[i]])
 
 for i, Mitigation in enumerate(temp_Mits):
     temp_Consq = Consequences[i]
-
     if "." in Mitigation:
-        temp = list(filter(None, Mitigation.split(".")))
+        temp = [[temp_Consq], list(filter(None, Mitigation.split(".")))]
+        for sublist in temp:
+            for item in sublist:
+                flat_list.append(item)
+        Consq.append(flat_list)
     else:
-        temp = Mitigation
-    Consq.append([temp_Consq, temp])
+        temp = [temp_Consq, Mitigation]
+        Consq.append(temp)
+    flat_list = []
 
 for j, Barrier in enumerate(temp_Bars):
     temp_Threats = Threats[j]
     if "." in Barrier:
-        temp1 = list(filter(None, Barrier.split(".")))
+        temp1 = [[temp_Threats], list(filter(None, Barrier.split(".")))]
+        for sublist in temp1:
+            for item in sublist:
+                flat_list.append(item)
+        Threat.append(flat_list)
     else:
-        temp1 = Barrier
-    Bar.append([temp_Threats, temp1])
+        temp1 = [temp_Threats, Barrier]
+        Threat.append(temp1)
 
-
-print(Consq)
-# for i in range(1, guide_length):
-#
-#     print(Consq[i][0]+Consq[i][1])
-#     temp_guide.append([[wks.cell(i+1, 1).value + ": " + guide[i], wks.cell(i+1, 3).value], Bar[i], Consq[i]])
-#
+data = []
+for item in range(len(Hazards)):
+    if item > 0:
+        data.append([item, Haz_UE[item], [Consq[item]], [Threat[item]]])
+print(data)
+with open('Data.p', 'wb') as fp:
+    pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
