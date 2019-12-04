@@ -1,6 +1,7 @@
 import gspread
 import pickle
 from oauth2client.service_account import ServiceAccountCredentials
+import time
 import itertools
 
 # https://docs.google.com/spreadsheets/d/1B9ZVkqULJcgF_PpkMap1fGj-hAowC1EIhO4wVeY7LBg/edit?usp=sharing
@@ -9,7 +10,7 @@ scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretdata.json', scope)
 gc = gspread.authorize(creds)
-wks = gc.open("HAZOP_DATA").worksheet('Sheet4')
+wks = gc.open("HAZOP_DATA").worksheet('HAZID_CEXC')
 
 Procedures = wks.col_values(1)
 Hazards = wks.col_values(2)
@@ -23,6 +24,7 @@ temp = []
 # Construct
 num_Haz = len(Hazards)-1
 for key in range(1, num_Haz+1):
+
     # Get slice
     # Ensure the last slice is obtained
     # temp.append([[Undesired_events[key], Hazards[key]],
