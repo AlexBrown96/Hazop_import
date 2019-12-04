@@ -24,12 +24,7 @@ temp = []
 # Construct
 num_Haz = len(Hazards)-1
 for key in range(1, num_Haz+1):
-
-    # Get slice
-    # Ensure the last slice is obtained
-    # temp.append([[Undesired_events[key], Hazards[key]],
-    #              [Consequences[key], temp_Mits[key]],
-    #              [Threats[key], temp_Bars[key]]])
+    time.sleep(10)
     temp.append([[wks.cell(key+1, 2).value, wks.cell(key+1, 3).value],
                  [wks.cell(key+1, 4).value, wks.cell(key+1, 5).value],
                  [wks.cell(key+1, 6).value, wks.cell(key+1, 7).value]])
