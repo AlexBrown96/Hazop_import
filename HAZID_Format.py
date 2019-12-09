@@ -8,31 +8,29 @@ import itertools
 # Generic Google drive API access
 scope = ['https://spreadsheets.google.com/feeds',
          'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretdata.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretfile_backup.json', scope)
 gc = gspread.authorize(creds)
 wks = gc.open("HAZOP_DATA").worksheet('HAZID_CEXC')
 
-Procedures = wks.col_values(1)
+# Procedures = wks.col_values(1)
 Hazards = wks.col_values(2)
-Undesired_events = wks.col_values(3)
-Consequences = wks.col_values(4)
-Threats = wks.col_values(6)
-temp_Mits = wks.col_values(5)
-temp_Bars = wks.col_values(7)
+# Undesired_events = wks.col_values(3)
+# Consequences = wks.col_values(4)
+# Threats = wks.col_values(6)
+# temp_Mits = wks.col_values(5)
+# temp_Bars = wks.col_values(7)
+# Consq_Severity = wks.col_values(10)
+# Threat_risk = wks.col_values(13)
 
 temp = []
 # Construct
 num_Haz = len(Hazards)-1
 for key in range(1, num_Haz+1):
-
-    # Get slice
-    # Ensure the last slice is obtained
-    # temp.append([[Undesired_events[key], Hazards[key]],
-    #              [Consequences[key], temp_Mits[key]],
-    #              [Threats[key], temp_Bars[key]]])
+    time.sleep(10)
     temp.append([[wks.cell(key+1, 2).value, wks.cell(key+1, 3).value],
                  [wks.cell(key+1, 4).value, wks.cell(key+1, 5).value],
-                 [wks.cell(key+1, 6).value, wks.cell(key+1, 7).value]])
+                 [wks.cell(key+1, 6).value, wks.cell(key+1, 7).value,
+                  wks.cell(key+1, 10).value,  wks.cell(key+1, 13).value]])
 
 with open('Data.p', 'wb') as fp:
     pickle.dump(temp, fp, protocol=pickle.HIGHEST_PROTOCOL)
