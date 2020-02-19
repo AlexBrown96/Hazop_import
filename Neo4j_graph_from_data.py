@@ -6,7 +6,7 @@ import time
 
 with open('Data.p', 'rb') as fp:
     Data = pickle.load(fp)
-graph = Graph("bolt://localhost:11002", password="12345")
+graph = Graph("bolt://localhost:7687", password="12345")
 
 ### TODO This line of code erases the current graph if it exists. Comment it out if this is not required
 graph.run("MATCH (n) DETACH DELETE n")
