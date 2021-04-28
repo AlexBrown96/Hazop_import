@@ -1,18 +1,14 @@
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 from py2neo import Graph, Node, Relationship
 
-# MATCH (n) DETACH DELETE n
-
-# Generic Google drive API access
-scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('jsonsecretfile_backup.json', scope)
-#file = gspread.authorize(creds)
-sheet_name = "Sheet6"
-graph = Graph("bolt://localhost:7687", password="12345")
-graph_write = False
+# TODO check depreciation of py2neo and neo4j
+# try:
+#     graph = Graph("bolt://localhost:7687", password="12345")
+# except ConnectionError:
+#     print("Cannot connect to NEO4j")
+# graph_write = False
+#graph = Graph()
 
 def get_hazid_data(gc, wks):
     '''
@@ -27,9 +23,9 @@ def get_hazid_data(gc, wks):
 
 
 def data_to_neo4j(file=None):
-    if file is None:
-        file = get_hazid_data(gspread.authorize(creds), sheet_name)
-        file[file == ""] = None
+    # if file is None:
+    #     file = get_hazid_data(gspread.authorize(creds), sheet_name)
+    #     file[file == ""] = None
     for undesired_event in file.Undesired_event.unique():
         df_hazard = file[file["Undesired_event"] == undesired_event]
         connect_branch(dict(zip(df_hazard.Consequences, df_hazard.Mitigations)), undesired_event, "Consequence", "Mitigation")
