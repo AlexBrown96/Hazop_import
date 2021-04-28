@@ -1,0 +1,4 @@
+﻿bowtie_id,Hazard,Undesired_event,Consequences,Mitigations,Threats,Barriers,Consq_Severity,Event_Likelihood,Risk_rating,Threat_Severity,Threat_Likelihood,Threat_rating
+1,Beer in fermentation vessel,Infected fermentation,Off-flavours in product,"Daily sampling and testing, Oxygen purging",Wild yeast strain in wort,"Sanitiser of correct strength, Mechanical cleaning, Fermenter airlock",0,0,0,0,0,0
+1,,,Higher attenuation,Daily sampling,Yeast no go,,0,0,0,0,0,0
+2,Haz1,Something else,Very bad thing,Common sense,Idiot,,0,0,0,0,0,0
